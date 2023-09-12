@@ -1,0 +1,20 @@
+.loginLogo {
+    margin-top: 5%;
+    width: 50%;
+    margin-left: 5%;
+    
+}
+
+.login-container {
+    display: flex;
+    flex-wrap: nowrap; /* 줄 바꿈 방지 */
+    overflow-x: scroll; /* 가로 스크롤바 활성화 */
+    
+}
+
+.loginform{
+    float:right;
+    margin-right: 13%;
+    margin-top: 5%;
+    white-space: nowrap;
+}

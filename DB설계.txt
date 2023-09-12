@@ -1,0 +1,197 @@
+우선 이 시스템의 계정 종류는 학생/교수/관리자로 구성되어 있어
+먼저 학생을 해볼께
+학생은 기본적으로 학번/주민번호앞자리로 시스템에 로그인을 할꺼야
+그리고 거기에 개인신상정보는 기본적으로 학과/성명/학적상태/학번 제외하고 하나도 안들어가있어 학적상태는 기본 재학중/휴학 이렇게 구성되어 있어.
+하지만 개인신상정보 입력을 할 수 있는 곳이 있고
+거기에 개인신상정보는 이름/영문성명/전화번호/이메일을 추가할 수 있어
+추가로 학생은 휴학/복학신청을 하는 곳이 있고 거기선 휴학상태일땐 복학신청을, 재학상태일땐 휴학신청을 할 수 있어. 추가로 자퇴신청을 하는 곳도 있어. 이 모든걸 신청을 할 땐 신청일자와 사유를 써야해. 이 휴학/복학/자퇴신청은 신청서를 폼에서 쓰면 교수에게 알림이 가고 그걸 승인하면 관리자에게 승인이 가고, 마지막 최종 승인을 하게 되어 있어. 그러면 최종 승인이 되면 변동이 될거고.
+게다가 수강과목쪽에서 보면 이제 과목엔 기본적으로 과목코드(auto increment)와  이수구분(전공, 교양), 과목명, 시수(들어야 하는 시간이 몇시간인지) 이렇게 들어가. 학생은 수강 신청 탭에서 수강 신청이 가능한 학기초에 수강 가능 강좌 목록을 보고 신청을 하면 돼. 강좌는 인원수가 제한이 있어야하고 특정 인원수가 넘으면 신청이 안되게 해야해. 그리고 학생은 자신의 수강 신청 목록을 보고 취소를 할 수도 있어. 또한 성적이 있어. 성적 역시 과목코드/이수구분/과목명/시수 정보가 뜨고 학점을 A+에서 F까지 교수가 매기면 볼 수 있게 되어있어. 그 성적 역시 2023년도1학기성적 2022년도2학기성적 2022년도1학기성적 이렇게 최신순으로 볼 수 있을꺼야. 그리고 기숙사 신청도 있는데 그냥 이건 학생 정보가 들어가면 기숙사 인원수를 제한해놓고 기숙사 인원수가 충분하면 신청하면 신청일자랑 해서 관리자에게 가고 관리자 승인만 들어가면 기숙사에 들어갈 수 있고 반대로 기숙사 퇴실도 이거랑 같은 형식으로 할거야. 따라서 기숙사에 따른 학생의 상태는 기숙사 안들어간상태>기숙사신청중>기숙사입실중>기숙사퇴실신청중 이런 상태만 있으면 될거같아. 거기에 증명서 탭이 있어. 증명서는 그냥 학생의 이름과 학번이 들어가고 증명서는 별 내용 없고 (임시니까) 증명서 부분에 학생의 이름과 학번이 들어간 채로 pdf로 저장할꺼야. 이건 DB필요없는거같긴하고. 교수는 이제 교수아이디와 교수 비밀번호 따로 부여를 하고 들어가면 이제 교수가 속한 학과의 학생들을 관리할 수 있는데 학과의 학생들의 정보를 조회할 수 있고 자퇴 및 휴학 처리 승인을 중간에서 할 수 있고, 학생들의 성적을 교수들이 매길 수 있게 할거같고.. 관리자는 계정 하나만 있고 그 계정에서 그냥 기숙사 관리와 자퇴 및 휴학 최종 승인권을 가지게 될거야 이 바탕으로 우선 DB를 만들어 줄 수 있을까?
+
+Students 테이블
+
+student_id (Primary Key): 학생 식별자 (고유한 값)
+student_number: 학번
+resident_registration_number: 주민등록번호 앞자리 (개인 정보 보호를 위해 암호화 또는 해싱)
+first_name: 이름
+last_name: 성
+department: 학과
+status: 학적 상태 (재학중, 휴학 등)
+english_name: 영문이름
+phone_number: 전화번호
+email: 이메일
+
+
+EnrollmentApplications 테이블 (휴학/복학/자퇴 신청)
+
+application_id (Primary Key): 신청 식별자
+student_id (Foreign Key): 학생 식별자 (Students 테이블 참조)
+application_type: 신청 유형 (휴학, 복학, 자퇴)
+application_date: 신청일자
+reason: 신청 사유
+status: 신청 상태 (신청서 작성, 교수 승인, 관리자 최종 승인 등)
+professor_approval: 교수 승인 여부 (예/아니오)
+admin_approval: 관리자 최종 승인 여부 (예/아니오)
+
+
+Courses 테이블
+
+course_id (Primary Key): 강의 고유 식별자
+course_code: 과목 코드
+course_name: 과목 이름
+credit_hours: 학점
+course_type: 이수 구분 (전공, 교양 등)
+instructor: 강의 강사 또는 교수
+max_students: 최대 수강 가능 학생 수
+current_students: 현재 수강 중인 학생 수
+
+
+Enrollments 테이블 (수강 신청)
+
+enrollment_id (Primary Key): 수강 등록 식별자
+student_id (Foreign Key): 학생 식별자 (Students 테이블 참조)
+course_id (Foreign Key): 강의 식별자 (Courses 테이블 참조)
+enrollment_date: 수강 등록 날짜
+status: 수강 상태 (수강 중, 취소 등)
+
+
+Grades 테이블 (성적 정보)
+
+grade_id (Primary Key): 성적 식별자
+enrollment_id (Foreign Key): 수강 등록 식별자 (Enrollments 테이블 참조)
+grade: 학생의 성적 (A+, A, B, C, D, F 등)
+grading_date: 성적 부여 날짜
+
+
+Dormitories 테이블 (기숙사 정보)
+
+dormitory_id (Primary Key): 기숙사 식별자
+dormitory_name: 기숙사 이름
+address: 기숙사 주소
+capacity: 기숙사 수용 인원
+current_occupancy: 현재 입주 학생 수
+
+
+HousingApplications 테이블 (기숙사 신청)
+
+application_id (Primary Key): 신청 식별자
+student_id (Foreign Key): 학생 식별자 (Students 테이블 참조)
+dormitory_id (Foreign Key): 기숙사 식별자 (Dormitories 테이블 참조)
+application_date: 신청 날짜
+status: 신청 상태 (신청 중, 승인, 거절 등)
+
+
+Transcripts 테이블 (학생 성적 기록)
+
+transcript_id (Primary Key): 성적 기록 식별자
+student_id (Foreign Key): 학생 식별자 (Students 테이블 참조)
+course_id (Foreign Key): 강의 식별자 (Courses 테이블 참조)
+semester: 수강한 학기
+credit_earned: 취득한 학점
+
+
+Professors 테이블
+
+professor_id (Primary Key): 교수 식별자
+professor_name: 교수 이름
+department: 소속 학과
+
+
+-- Students 테이블: 학생 정보 저장
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_number VARCHAR(10) NOT NULL UNIQUE,
+    resident_registration_number VARCHAR(8) NOT NULL UNIQUE,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    status ENUM('재학중', '휴학', '복학', '자퇴') NOT NULL,
+    english_name VARCHAR(50), 
+    phone_number VARCHAR(20), 
+    email VARCHAR(100) 
+);
+
+-- EnrollmentApplications 테이블: 휴학/복학/자퇴 신청 정보 저장
+CREATE TABLE EnrollmentApplications (
+    application_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    application_type ENUM('휴학', '복학', '자퇴') NOT NULL,
+    application_date DATE NOT NULL,
+    reason TEXT,
+    status ENUM('신청서 작성', '교수 승인', '관리자 최종 승인') NOT NULL,
+    professor_approval BOOLEAN,
+    admin_approval BOOLEAN,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+);
+
+-- Courses 테이블: 강의 정보 저장
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_code VARCHAR(20) NOT NULL UNIQUE,
+    course_name VARCHAR(100) NOT NULL,
+    credit_hours INT NOT NULL,
+    course_type ENUM('전공', '교양') NOT NULL,
+    instructor VARCHAR(50),
+    max_students INT,
+    current_students INT
+);
+
+-- Enrollments 테이블: 수강 등록 정보 저장
+CREATE TABLE Enrollments (
+    enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    enrollment_date DATE NOT NULL,
+    status ENUM('수강 중', '취소') NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- Grades 테이블: 학생 성적 정보 저장
+CREATE TABLE Grades (
+    grade_id INT PRIMARY KEY AUTO_INCREMENT,
+    enrollment_id INT,
+    grade ENUM('A+', 'A', 'B', 'C', 'D', 'F') NOT NULL,
+    grading_date DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Enrollments(enrollment_id)
+);
+
+-- Dormitories 테이블: 기숙사 정보 저장
+CREATE TABLE Dormitories (
+    dormitory_id INT PRIMARY KEY AUTO_INCREMENT,
+    dormitory_name VARCHAR(100) NOT NULL UNIQUE,
+    address VARCHAR(200),
+    capacity INT,
+    current_occupancy INT
+);
+
+-- HousingApplications 테이블: 기숙사 신청 정보 저장
+CREATE TABLE HousingApplications (
+    application_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    dormitory_id INT,
+    application_date DATE NOT NULL,
+    status ENUM('신청 중', '승인', '거절') NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (dormitory_id) REFERENCES Dormitories(dormitory_id)
+);
+
+-- Transcripts 테이블: 학생 성적 기록 저장
+CREATE TABLE Transcripts (
+    transcript_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    semester VARCHAR(20),
+    credit_earned INT,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- Professors 테이블: 교수 정보 저장
+CREATE TABLE Professors (
+    professor_id INT PRIMARY KEY AUTO_INCREMENT,
+    professor_name VARCHAR(100) NOT NULL,
+    department VARCHAR(50) NOT NULL
+);
+
+-- 각 학과를 위한 추가 테이블을 여기에 생성할 수 있습니다.
+-- AI과와 소프트웨어과의 테이블을 추가로 생성하려면 필요한 필드와 관계를 고려하여 테이블을 설계하십시오.

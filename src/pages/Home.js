@@ -2,17 +2,31 @@ import React, { useState } from 'react';
 import './css/Home.css'; 
 
 function Home() {
-  // 상태 변수를 사용하여 학번과 주민번호 앞자리를 관리합니다.
   const [studentNumber, setStudentNumber] = useState('');
   const [residentRegistrationNumber, setResidentRegistrationNumber] = useState('');
+  const [loginError, setLoginError] = useState(null);
 
-  // 로그인 버튼을 클릭할 때 실행되는 함수
-  const handleLogin = () => {
-    // 학번과 주민번호 앞자리를 사용하여 로그인 처리를 수행합니다.
-    // 이 부분에서 서버로 요청을 보내서 로그인 처리를 할 수 있습니다.
-    // 예를 들어, Axios 또는 fetch를 사용하여 서버와 통신할 수 있습니다.
-    // 로그인에 성공하면 다음 페이지로 이동하도록 코드를 작성하세요.
-    // 예를 들어, React Router를 사용하여 페이지를 이동할 수 있습니다.
+  const handleLogin = async (values: Record<string, any>) => {
+    try {
+      const response = await fetch('http://localhost:3003/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // 로그인 성공 시 필요한 작업 수행
+      } else {
+        const errorData = await response.json();
+        setLoginError(errorData.message || '로그인 실패');
+      }
+    } catch (error) {
+      console.error('로그인 오류:', error);
+      setLoginError('로그인 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -20,28 +34,29 @@ function Home() {
       <div className="login-form">
         <img className='loginLogo' src="img/loginLogo.png" alt="Login Logo" />
         <div className='loginform'>
-            <div>
-                <img src="img/loginLogo2.png" alt='Login Logo2' />
-            </div>
-            <div className="input-container">
+          <div>
+            <img src="img/loginLogo2.png" alt='Login Logo2' />
+          </div>
+          <div className="input-container">
             <input
-                type="text"
-                placeholder="학번"
-                value={studentNumber}
-                onChange={(e) => setStudentNumber(e.target.value)}
+              type="text"
+              placeholder="학번"
+              value={studentNumber}
+              onChange={(e) => setStudentNumber(e.target.value)}
             />
-            </div>
+          </div>
 
-            <div className="input-container">
+          <div className="input-container">
             <input
-                type="password"
-                placeholder="주민번호 앞자리"
-                value={residentRegistrationNumber}
-                onChange={(e) => setResidentRegistrationNumber(e.target.value)}
+              type="text"
+              placeholder="주민번호 앞자리"
+              value={residentRegistrationNumber}
+              onChange={(e) => setResidentRegistrationNumber(e.target.value)}
             />
-            </div>
+          </div>
 
-            <button onClick={handleLogin}>로그인</button>
+          <button onClick={() => handleLogin({ studentNumber, residentRegistrationNumber })}>로그인</button>
+          {loginError && <div className="error-message">{loginError}</div>}
         </div>
       </div>
     </div>

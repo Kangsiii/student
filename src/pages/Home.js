@@ -56,7 +56,7 @@ function Home() {
           </div>
 
           <button onClick={() => handleLogin({ studentNumber, residentRegistrationNumber })}>로그인</button>
-          {loginError && <div className="error-message">{loginError}</div>}
+          {loginError && <div className="error-message">{loginError}</div>}  
         </div>
       </div>
     </div>

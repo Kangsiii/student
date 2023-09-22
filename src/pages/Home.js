@@ -49,7 +49,7 @@ function Home() {
           <div className="input-container">
             <input
               type="text"
-              placeholder="주민번호 앞자리"
+              placeholder="주민번호 앞자리"   
               value={residentRegistrationNumber}
               onChange={(e) => setResidentRegistrationNumber(e.target.value)}
             />
